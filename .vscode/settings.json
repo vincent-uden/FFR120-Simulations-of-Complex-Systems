@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "./Homework1/Harmonic-Oscillator"
+    ]
+}
