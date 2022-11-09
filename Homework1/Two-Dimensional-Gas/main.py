@@ -11,12 +11,14 @@ from typing import Tuple
 from tqdm import trange
 from sklearn.preprocessing import normalize
 
+SNAPSHOT = 0
+ENERGIES = 1
+
 def init_positions(size: Tuple[int, int], L: float, sigma: float):
     positions = np.zeros(size)
 
     for i in range(size[0]):
         point_placed = False
-        print(i)
 
         while not point_placed:
             new_pos = np.random.rand(1, 2) * L
@@ -49,10 +51,7 @@ def lennard_jones_force(positions: np.ndarray, epsilon: float, sigma: float) -> 
 
             forces[i,:] -= magnitude*direction
             forces[j,:] += magnitude*direction
-
     return forces
-
-# TODO: Implement boundary reflections
 
 if __name__ == "__main__":
     m       = 1.0
@@ -62,22 +61,48 @@ if __name__ == "__main__":
     velocity_scale = np.sqrt(2*epsilon/m)
     time_scale = sigma*np.sqrt(m/(2*epsilon))
 
-    L = sigma * 2
-    N = 5
+    L = sigma * 100
+    N = 100
 
     positions = init_positions((N,2), L, sigma)
-    #positions = np.array([[-sigma, 0.0], [sigma, 0.0]])
-    velocities = init_velocities((N,2), 2*velocity_scale*0.1)
-    #velocities = np.array([[0.0, 0.1], [0.0, -0.1]])
+    velocities = init_velocities((N,2), 2*velocity_scale)
 
-    print(positions.shape, velocities.shape)
+    time_steps = 500
+    plot_freq = 10
+    position_history = np.empty((time_steps//plot_freq,N,2))
 
-    for t in trange(1000):
-        if t % 10 == 0:
-            plt.plot(positions[:,0], positions[:,1], '.')
+    plotting = SNAPSHOT
 
-        (positions, velocities) = leapfrog(positions, velocities, lambda x: lennard_jones_force(x, epsilon, sigma), dt=sigma/(2*velocity_scale) * 0.05)
+    for t in trange(time_steps):
+        if t % plot_freq == 0 and plotting == SNAPSHOT:
+            position_history[t // plot_freq,:,:] = positions
 
-    #plt.gca().set_xlim([0, L])
-    #plt.gca().set_ylim([0, L])
+        (positions, velocities) = leapfrog(positions, velocities, lambda x: lennard_jones_force(x, epsilon, sigma), dt=sigma/(2*velocity_scale) * 0.01)
+
+        for i in range(N):
+            # Outside left bound
+            if positions[i,0] < 0:
+                positions[i,0] = positions[i,0] * -1
+                velocities[i,0] = velocities[i,0] * -1
+
+            # Outside right bound
+            elif positions[i,0] > L:
+                positions[i,0] = 2*L - positions[i,0]
+                velocities[i,0] = velocities[i,0] * -1
+
+            # Outside lower bound
+            elif positions[i,1] < 0:
+                positions[i,1] = positions[i,1] * -1
+                velocities[i,1] = velocities[i,1] * -1
+
+            # Outside upper bound
+            elif positions[i,1] > L:
+                positions[i,1] = 2*L - positions[i,1]
+                velocities[i,1] = velocities[i,1] * -1
+
+    if plotting == SNAPSHOT:
+        for i in range(N):
+            plt.plot(position_history[:,i,0].squeeze(), position_history[:,i,1].squeeze())
+        plt.gca().set_xlim([0, L])
+        plt.gca().set_ylim([0, L])
     plt.show()
