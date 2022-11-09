@@ -37,6 +37,18 @@ def init_velocities(size: Tuple[int, int], v0: float):
     directions = np.column_stack((np.cos(angles), np.sin(angles)))
     return directions * v0
 
+def lennard_jones_potential(positions: np.ndarray, epsilon: float, sigma: float) -> np.ndarray:
+    potentials = np.zeros(positions.shape[0])
+
+    for i in range(positions.shape[0]):
+        # "Triangular" iteration avoids calculating force on self and duplicate calculations
+        for j in range(i+1, positions.shape[0]):
+            r = np.sqrt(np.sum((positions[i,:] - positions[j,:])**2))
+            magnitude = 4 * epsilon * ( np.power(sigma/r,12) - np.power(sigma/r,6) )
+
+            forces[i,:] += magnitude
+            forces[j,:] += magnitude
+    return
 
 def lennard_jones_force(positions: np.ndarray, epsilon: float, sigma: float) -> np.ndarray:
     forces = np.zeros_like(positions)
@@ -52,6 +64,13 @@ def lennard_jones_force(positions: np.ndarray, epsilon: float, sigma: float) -> 
             forces[i,:] -= magnitude*direction
             forces[j,:] += magnitude*direction
     return forces
+
+def kinetic_energy(velocities: np.ndarray, m: float) -> float:
+    return 0.5 * m * np.sum(velocities**2)
+
+def potential_energy(positions: np.ndarray, epsilon: float, sigma: float) -> float:
+    # Check the math on this one
+    return 0.5 * np.sum(lennard_jones_potential(positions, epsilon, sigma))
 
 if __name__ == "__main__":
     m       = 1.0
