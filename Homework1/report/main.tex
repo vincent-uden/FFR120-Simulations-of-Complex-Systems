@@ -78,4 +78,17 @@ The Leapfrog integration does a much better job at adhereing to the analytical t
     \label{fig:leapfrog_results}
 \end{figure}
 
+\section*{Excercise 1.6}
+
+\subsection*{a)}
+The code for this excercise is shown at the end of the report. It uses the same integrator code as previously, with the force function switched out. Now it uses force derived from a Lennard-Jones potential. Of course this severely impacts the programs performance as the time complexity of simulation $n$ bodies interacting with every other body has the asymptotic time complexity $O(n^2)$. Luckily the interactions obey Newton's 3st law. The force excerted on particle $i$ onto particle $j$ is indentical in size but opposite in direction to the force from $j$ onto $i$. This means that we can eliminate some duplicate calculations through a triangular iteration, resulting in a complexity of $O(n(n+1)/2)$. Some additional speed up can be achieved when calculating the Lennard-Jones potential. There's no need to take the square root of $\sqrt{(\vec{r}_i - \vec{r}_j)^2} = |\vec{r}_i - \vec{r}_j|$ since it'll be raised to the power of 12 or 6 later. Skipping the root calculation and raising it to the power of 6 and 3 instead saves an expensive calculation which is made for every pair of particles.
+
+When plotting, only a tenth or so of the time steps are saved to be drawn. The need for a small $\Delta t$ is only vital to ensure conservation of energy, not to view the process with an adequate resolution.
+
+\subsection*{b)}
+Trying different values of $\Delta t$ seems to indicate that about $\sigma/(2v_0) \cdot 0.02$ is about the biggest it can be while still conserving total energy.
+
+\subsection*{c)}
+\subsection*{d)}
+
 \end{document}

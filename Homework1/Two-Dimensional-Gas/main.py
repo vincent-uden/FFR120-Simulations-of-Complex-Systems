@@ -66,8 +66,8 @@ def lennard_jones_force(positions: np.ndarray, epsilon: float, sigma: float) -> 
             forces[j,:] += magnitude*direction
     return forces
 
-def kinetic_energy(velocities: np.ndarray, m: float) -> float:
-    return 0.5 * m * np.sum(velocities**2)
+def kinetic_energy(velocities: np.ndarray, m: float, velocity_scale: float) -> float:
+    return 0.5 * m * np.sum((velocities/velocity_scale)**2)
 
 def potential_energy(positions: np.ndarray, epsilon: float, sigma: float) -> float:
     # Check the math on this one
@@ -87,20 +87,23 @@ if __name__ == "__main__":
     positions = init_positions((N,2), L, sigma)
     velocities = init_velocities((N,2), 2*velocity_scale)
 
-    time_steps = 100000
-    plot_freq = 50
-    dt = sigma/(2*velocity_scale) * 0.001
+    time_steps = 50000
+    plot_freq = 5
+    dt = sigma/(2*velocity_scale) * 0.02
     position_history = np.empty((time_steps//plot_freq,N,2))
 
     E_k_history = np.empty(time_steps//plot_freq)
     E_p_history = np.empty(time_steps//plot_freq)
 
     plotting = ENERGIES
+    logging = False
 
     for t in trange(time_steps):
-        if t % plot_freq == 0 and plotting == ENERGIES:
+        if logging or plotting == SNAPSHOT:
             position_history[t // plot_freq,:,:] = positions
-            E_k_history[t//plot_freq] = kinetic_energy(velocities, m)
+        if t % plot_freq == 0 and plotting == ENERGIES:
+            # Something is wrong with the units. Graphs have the correct shape but are not of the same scale
+            E_k_history[t//plot_freq] = kinetic_energy(velocities, m, velocity_scale)
             E_p_history[t//plot_freq] = potential_energy(positions, epsilon, sigma)
 
         (positions, velocities) = leapfrog(positions, velocities, lambda x: lennard_jones_force(x, epsilon, sigma), dt=dt)
@@ -132,13 +135,20 @@ if __name__ == "__main__":
         plt.gca().set_xlim([0, L])
         plt.gca().set_ylim([0, L])
     elif plotting == ENERGIES:
-        plt.subplot(2, 1, 1)
+        plt.subplot(3, 1, 1)
         plt.plot(np.arange(time_steps//plot_freq) * dt / time_scale, E_k_history / epsilon, '', label="Kinetic Energy", markersize=1)
         plt.ylabel("$E_k$")
-        plt.subplot(2, 1, 2)
+        plt.subplot(3, 1, 2)
         plt.plot(np.arange(time_steps//plot_freq) * dt / time_scale, E_p_history / epsilon, '', label="Potential Energy", markersize=1)
         plt.ylabel("$E_p$")
+        plt.subplot(3, 1, 3)
+        plt.plot(np.arange(time_steps//plot_freq) * dt / time_scale, (E_k_history + E_p_history / epsilon), '', label="Potential Energy", markersize=1)
+        plt.ylabel("$E$")
 
-    os.mkdir("./logs")
-    np.savetxt("./logs/" + datetime.now().strftime("%d-%m-%Y-%H:%M:%S") + ".txt", position_history.reshape(position_history.shape[0],N*2))
+    if logging:
+        try:
+            os.mkdir("./logs")
+        except FileExistsError:
+            pass
+        np.savetxt("./logs/" + datetime.now().strftime("%d-%m-%Y-%H:%M:%S") + ".txt", position_history.reshape(position_history.shape[0],N*2))
     plt.show()
