@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 import numpy as np
+import os
 import sys
 
 sys.path.insert(0, "../Harmonic-Oscillator/")
@@ -138,5 +139,6 @@ if __name__ == "__main__":
         plt.plot(np.arange(time_steps//plot_freq) * dt / time_scale, E_p_history / epsilon, '', label="Potential Energy", markersize=1)
         plt.ylabel("$E_p$")
 
+    os.mkdir("./logs")
     np.savetxt("./logs/" + datetime.now().strftime("%d-%m-%Y-%H:%M:%S") + ".txt", position_history.reshape(position_history.shape[0],N*2))
     plt.show()
