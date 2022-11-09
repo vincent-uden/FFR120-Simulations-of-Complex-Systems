@@ -5,11 +5,11 @@ import sys
 
 sys.path.insert(0, "../Harmonic-Oscillator/")
 
+from datetime import datetime
 from matplotlib import pyplot as plt
 from integrate import leapfrog
 from typing import Tuple
 from tqdm import trange
-from sklearn.preprocessing import normalize
 
 SNAPSHOT = 0
 ENERGIES = 1
@@ -43,12 +43,12 @@ def lennard_jones_potential(positions: np.ndarray, epsilon: float, sigma: float)
     for i in range(positions.shape[0]):
         # "Triangular" iteration avoids calculating force on self and duplicate calculations
         for j in range(i+1, positions.shape[0]):
-            r = np.sqrt(np.sum((positions[i,:] - positions[j,:])**2))
-            magnitude = 4 * epsilon * ( np.power(sigma/r,12) - np.power(sigma/r,6) )
+            r = (np.sum((positions[i,:] - positions[j,:])**2))
+            magnitude = 4 * epsilon * ( np.power(sigma**2/r,6) - np.power(sigma**2/r,3) )
 
-            forces[i,:] += magnitude
-            forces[j,:] += magnitude
-    return
+            potentials[i] += magnitude
+            potentials[j] += magnitude
+    return potentials
 
 def lennard_jones_force(positions: np.ndarray, epsilon: float, sigma: float) -> np.ndarray:
     forces = np.zeros_like(positions)
@@ -59,7 +59,7 @@ def lennard_jones_force(positions: np.ndarray, epsilon: float, sigma: float) -> 
             r = np.sqrt(np.sum((positions[i,:] - positions[j,:])**2))
             magnitude = 4 * epsilon * ( 12*np.power(sigma,12)*np.power(r, -13) - 6*np.power(sigma,6)*np.power(r,-7) )
             # Direction of force exerted on i (towards j)
-            direction = normalize((positions[j,:] - positions[i,:]).reshape(1,-1)).squeeze()
+            direction = (positions[j,:] - positions[i,:]) / r
 
             forces[i,:] -= magnitude*direction
             forces[j,:] += magnitude*direction
@@ -73,7 +73,7 @@ def potential_energy(positions: np.ndarray, epsilon: float, sigma: float) -> flo
     return 0.5 * np.sum(lennard_jones_potential(positions, epsilon, sigma))
 
 if __name__ == "__main__":
-    m       = 1.0
+    m       = 0.1
     epsilon = 1.0
     sigma   = 1.0
 
@@ -81,22 +81,28 @@ if __name__ == "__main__":
     time_scale = sigma*np.sqrt(m/(2*epsilon))
 
     L = sigma * 100
-    N = 100
+    N = 10
 
     positions = init_positions((N,2), L, sigma)
     velocities = init_velocities((N,2), 2*velocity_scale)
 
-    time_steps = 500
-    plot_freq = 10
+    time_steps = 100000
+    plot_freq = 50
+    dt = sigma/(2*velocity_scale) * 0.001
     position_history = np.empty((time_steps//plot_freq,N,2))
 
-    plotting = SNAPSHOT
+    E_k_history = np.empty(time_steps//plot_freq)
+    E_p_history = np.empty(time_steps//plot_freq)
+
+    plotting = ENERGIES
 
     for t in trange(time_steps):
-        if t % plot_freq == 0 and plotting == SNAPSHOT:
+        if t % plot_freq == 0 and plotting == ENERGIES:
             position_history[t // plot_freq,:,:] = positions
+            E_k_history[t//plot_freq] = kinetic_energy(velocities, m)
+            E_p_history[t//plot_freq] = potential_energy(positions, epsilon, sigma)
 
-        (positions, velocities) = leapfrog(positions, velocities, lambda x: lennard_jones_force(x, epsilon, sigma), dt=sigma/(2*velocity_scale) * 0.01)
+        (positions, velocities) = leapfrog(positions, velocities, lambda x: lennard_jones_force(x, epsilon, sigma), dt=dt)
 
         for i in range(N):
             # Outside left bound
@@ -124,4 +130,13 @@ if __name__ == "__main__":
             plt.plot(position_history[:,i,0].squeeze(), position_history[:,i,1].squeeze())
         plt.gca().set_xlim([0, L])
         plt.gca().set_ylim([0, L])
+    elif plotting == ENERGIES:
+        plt.subplot(2, 1, 1)
+        plt.plot(np.arange(time_steps//plot_freq) * dt / time_scale, E_k_history / epsilon, '', label="Kinetic Energy", markersize=1)
+        plt.ylabel("$E_k$")
+        plt.subplot(2, 1, 2)
+        plt.plot(np.arange(time_steps//plot_freq) * dt / time_scale, E_p_history / epsilon, '', label="Potential Energy", markersize=1)
+        plt.ylabel("$E_p$")
+
+    np.savetxt("./logs/" + datetime.now().strftime("%d-%m-%Y-%H:%M:%S") + ".txt", position_history.reshape(position_history.shape[0],N*2))
     plt.show()
