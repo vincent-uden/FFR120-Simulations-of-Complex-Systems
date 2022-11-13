@@ -86,9 +86,30 @@ The code for this excercise is shown at the end of the report. It uses the same 
 When plotting, only a tenth or so of the time steps are saved to be drawn. The need for a small $\Delta t$ is only vital to ensure conservation of energy, not to view the process with an adequate resolution.
 
 \subsection*{b)}
-Trying different values of $\Delta t$ seems to indicate that about $\sigma/(2v_0) \cdot 0.02$ is about the biggest it can be while still conserving total energy.
+Trying different values of $\Delta t$ seems to indicate that about $\sigma/(2v_0) \cdot 0.005$ is about the biggest it can be while keeping the baseline level of total energy within 1\% of it's initial value.
+
+\newpage
 
 \subsection*{c)}
+After running the integration for 100 timesteps the plot shown in figure \ref{fig:100short} was obtained. For reference the entire simulation going to $t \approx 250 t_0$ runs for 100\,000 timesteps.
+
+\begin{figure}[h!]
+    \centering
+    \includegraphics[width=0.7 \linewidth]{../Two-Dimensional-Gas/figures/100_particles_short.pdf}
+    \caption{Instantaneous particle trajectories. Note most particles seeming unaffected by each outher, traveling in a straight line. The Lennard-Jones potential leads to interactions only at very small distances.}
+    \label{fig:100short}
+\end{figure}
+
+\newpage
+
 \subsection*{d)}
+After running a longer simulation shown in figure \ref{fig:100long} the trade off between potenial and kinetic energy becomes quite clear. Each time two particles approach each other for a ``collision'' the kinetic energy drops as they slow down, repelling each other. At the same time the potential energy rises as they get deeper into each other's potential fields. Afterwards the energy exchange reverses restoring the system to being mostly composed of kinetic energy. Compared to figure 1.7 from the book I seem to have a box which is much bigger compared to the particles since the collisions are more frequent in the book. A final comment on the total energy: The total energy increases slightly over time, in discrete steps most likely corresponding to high energy collisions. This increase in energy is tiny in comparison to even the deviations in energy, let alone the absolute value of the energy, less than 1\%.
+
+\begin{figure}[h!]
+    \hspace{-1.6cm}
+    \includegraphics[width=1.2\linewidth]{../Two-Dimensional-Gas/figures/100N_250t.pdf}
+    \caption{A long runnning simulation up to $t \approx 250 t_0$. The two upper subplots show the variation in kinetic and potential energy, measured as the difference between it's current value and the intial value $\Delta E_{p/k}(t) = E_{p/k}(0) - E_{p/k}(t)$}
+    \label{fig:100long}
+\end{figure}
 
 \end{document}
