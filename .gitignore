@@ -130,3 +130,5 @@ dmypy.json
 
 *.aux
 *.log
+
+/Homework2/*/output/*.csv
