@@ -13,7 +13,7 @@ UPR_BND = L/2
 
 if __name__ == "__main__":
 
-    for color, t in zip(["#537c78", "#cc222b", "#f15b4c", "#faa41b", "#ffd45b"],[10, 100, 1000, 10000, 100000]):
+    for color, t in zip(["#537c78", "#cc222b", "#f15b4c", "#faa41b", "#ffd45b"],[1000]):
         with open(f"./output/{t}.csv") as f:
             contents = f.read()
             x = np.array(list(map(float, contents.split(",")[:-1])))

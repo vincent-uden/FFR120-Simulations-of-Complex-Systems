@@ -4,8 +4,9 @@
 #include <stdlib.h>
 
 const double x0 = 0;
-const double sigma = 1;
 const double dt = 0.01;
+const double sigma0 = 1;
+const double delta_sigma = 1.8;
 
 const int N = 10000;
 const double T = 10;
@@ -32,6 +33,10 @@ void getNowAsDateStr(char* text, int textLen) {
     strftime(text, textLen-1, "./output/%d_%m_%Y_%H-%M-%S.csv", t);
 }
 
+double sigma(double x) {
+    return sigma0 + delta_sigma/L * x;
+}
+
 void simulateTrajectories(double* x, int n) {
     const double dt_sqrt = sqrt(dt);
 
@@ -48,7 +53,7 @@ void simulateTrajectories(double* x, int n) {
     while ( t < T ) {
         setDirs(diff);
         for ( int i = 0; i < n; i++ ) {
-            diff[i] *= sigma * dt_sqrt;
+            diff[i] *= sigma(x[i]) * dt_sqrt;
             x[i] += diff[i];
 
             if ( x[i] < -L/2 ) {
