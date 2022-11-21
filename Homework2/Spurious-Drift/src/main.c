@@ -9,7 +9,7 @@ const double sigma0 = 1;
 const double delta_sigma = 1.8;
 
 const int N = 10000;
-const double T = 100000;
+const double T = 10000;
 const double L = 100;
 const double ALPHA = 1;
 
