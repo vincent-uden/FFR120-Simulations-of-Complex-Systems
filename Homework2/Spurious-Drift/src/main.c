@@ -9,9 +9,9 @@ const double sigma0 = 1;
 const double delta_sigma = 1.8;
 
 const int N = 10000;
-const double T = 10000;
+const double T = 100;
 const double L = 100;
-const double ALPHA = 1;
+const double ALPHA = 0.5;
 
 void dumpCsv(FILE* fptr, double* x) {
     for ( int i = 0; i < N; i++ ) {

@@ -1,0 +1,38 @@
+\documentclass[a4paper, 12pt]{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage[top=.25in,bottom=.25in,left=.25in,right=.25in]{geometry}
+\usepackage[parfill]{parskip}
+\usepackage{courier}
+
+\usepackage{listings}
+\lstset{
+    frame=single,
+    breaklines=true,
+    basicstyle=\footnotesize\ttfamily
+}
+
+\begin{document}
+\pagenumbering{gobble}
+
+/Free-Diffusion/main.py (used for 7.1)
+\lstinputlisting{../Free-Diffusion/main.py}
+\newpage
+
+/Diffusion-In-Box/src/main.c (used for 7.2)
+\lstinputlisting{../Diffusion-In-Box/src/main.c}
+\newpage
+
+/Multiplicative-Noise/src/main.c (used for 7.3)
+\lstinputlisting{../Multiplicative-Noise/src/main.c}
+\newpage
+
+/Spurious-Drift/src/main.c (used for 7.4)
+\lstinputlisting{../Spurious-Drift/src/main.c}
+\newpage
+
+/[Diffusion-In-Box|Multiplicative-Noise|Spurious-Drift]/main.py (used for 7.2, 7.3, 7.4)
+\lstinputlisting{../Diffusion-In-Box/main.py}
+\newpage
+
+\end{document}

@@ -37,11 +37,11 @@ if __name__ == "__main__":
     counts2, bins2 = np.histogram(x[:,j], bins=BINS, range=(LWR_BND,UPR_BND))
 
     print(f"j={j//10}")
-    print(f"  Avg:{np.mean(x[:,j//10])} Std:{np.std(x[:,j//10])} Expected std:{sigma*np.sqrt(2*j//10*dt)}")
+    print(f"  Avg:{np.mean(x[:,j//10])} Std:{np.std(x[:,j//10])} Expected std:{sigma*np.sqrt(j//10*dt)}")
     print(f"j={j//2}")
-    print(f"  Avg:{np.mean(x[:,j//2])} Std:{np.std(x[:,j//2])} Expected std:{sigma*np.sqrt(2*j//2*dt)}")
+    print(f"  Avg:{np.mean(x[:,j//2])} Std:{np.std(x[:,j//2])} Expected std:{sigma*np.sqrt(j//2*dt)}")
     print(f"j={j}")
-    print(f"  Avg:{np.mean(x[:,j])} Std:{np.std(x[:,j])} Expected std:{sigma*np.sqrt(2*j*dt)}")
+    print(f"  Avg:{np.mean(x[:,j])} Std:{np.std(x[:,j])} Expected std:{sigma*np.sqrt(j*dt)}")
 
     plt.stairs(counts0,bins0, fill=True, alpha=0.2, color="#590995", label=f"$j={j//10}$")
     plt.stairs(counts1,bins1, fill=True, alpha=0.2, color="#03C4A1", label=f"$j={j//2}$")

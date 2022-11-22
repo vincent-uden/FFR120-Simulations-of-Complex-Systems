@@ -13,8 +13,8 @@ UPR_BND = L/2
 
 if __name__ == "__main__":
 
-    for color, t in zip(["#537c78", "#cc222b", "#f15b4c", "#faa41b", "#ffd45b"],[1000]):
-        with open(f"./output/{t}.csv") as f:
+    for color, t in zip(["#537c78", "#cc222b", "#f15b4c", "#faa41b", "#ffd45b"],[10, 100, 1000, 10000, 100000]):
+        with open(f"./output/strat_{t}.csv") as f:
             contents = f.read()
             x = np.array(list(map(float, contents.split(",")[:-1])))
 
@@ -27,6 +27,7 @@ if __name__ == "__main__":
     plt.xlabel("$x_j$")
     plt.ylabel("Count")
     plt.legend()
+    plt.title("Stratonovich Integral")
     plt.grid()
 
     plt.show()
