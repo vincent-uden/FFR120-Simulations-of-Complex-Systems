@@ -13,7 +13,7 @@ def gen_graph(n, p):
             A[i,j] = np.random.rand()<p
             A[j,i] = A[i,j]
 
-    return(A)
+    return A
 
 def degree_prob(n, k, p):
     return scipy.special.comb(n-1, k) * np.power(p, k) * np.power((1 - p),n-1-k)

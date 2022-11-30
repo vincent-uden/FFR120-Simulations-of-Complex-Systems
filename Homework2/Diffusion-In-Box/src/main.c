@@ -8,7 +8,7 @@ const double sigma = 1;
 const double dt = 0.01;
 
 const int N = 10000;
-const double T = 10;
+const double T = 1000;
 const double L = 100;
 
 void dumpCsv(FILE* fptr, double* x) {
